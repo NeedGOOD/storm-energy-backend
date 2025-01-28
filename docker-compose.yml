@@ -3,7 +3,7 @@ services:
     container_name: backend
     build:
       context: ./backend
-    command: npm run start
+    command: npm run start:dev
     restart: unless-stopped
     ports:
       - "3000:3000"
