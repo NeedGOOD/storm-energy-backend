@@ -28,10 +28,10 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     await this.usersRepository.update(id, updateUserDto)
-    return await this.usersRepository.findOneBy({ id })
+    return this.usersRepository.findOneBy({ id })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    return this.usersRepository.delete(id)
   }
 }
