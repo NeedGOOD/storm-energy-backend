@@ -20,4 +20,7 @@ export class Users {
 
   @Column({ type: 'varchar', length: 255, name: 'password', nullable: false })
   password: string
+
+  @Column({ type: 'enum', enum: ['Admin', 'User'], nullable: false })
+  role: string
 }
