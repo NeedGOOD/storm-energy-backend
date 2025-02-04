@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import { AccumulatorModule } from './accumulator/accumulator.module';
 import { WindmillsModule } from './windmills/windmills.module';
+import { SolarpanelModule } from './solarpanel/solarpanel.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { WindmillsModule } from './windmills/windmills.module';
     DatabaseModule,
     SystemModule,
     AccumulatorModule,
-    WindmillsModule
+    WindmillsModule,
+    SolarpanelModule
   ],
   controllers: [AppController],
   providers: [AppService],
