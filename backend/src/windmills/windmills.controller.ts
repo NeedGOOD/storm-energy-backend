@@ -23,7 +23,7 @@ export class WindmillsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWindmillDto: UpdateWindmillDto) {
+  async update(@Param('id') id: string, @Body() updateWindmillDto: UpdateWindmillDto) {
     return this.windmillsService.update(+id, updateWindmillDto);
   }
 
