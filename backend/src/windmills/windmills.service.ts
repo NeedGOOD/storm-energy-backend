@@ -22,8 +22,8 @@ export class WindmillsService {
     return this.windmillsRepository.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} windmill`;
+  async findOne(id: number) {
+    return this.windmillsRepository.findOneBy({ id })
   }
 
   update(id: number, updateWindmillDto: UpdateWindmillDto) {
