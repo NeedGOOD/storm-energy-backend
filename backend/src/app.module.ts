@@ -4,12 +4,15 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
+import { SystemModule } from './system/system.module';
+import { AccumulatorModule } from './accumulator/accumulator.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     UsersModule,
-    DatabaseModule
+    DatabaseModule,
+    AccumulatorModule
   ],
   controllers: [AppController],
   providers: [AppService],
