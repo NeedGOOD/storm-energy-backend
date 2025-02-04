@@ -6,13 +6,16 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import { AccumulatorModule } from './accumulator/accumulator.module';
+import { WindmillsModule } from './windmills/windmills.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     UsersModule,
     DatabaseModule,
-    AccumulatorModule
+    SystemModule,
+    AccumulatorModule,
+    WindmillsModule
   ],
   controllers: [AppController],
   providers: [AppService],
