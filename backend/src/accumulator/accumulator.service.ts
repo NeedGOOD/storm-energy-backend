@@ -26,8 +26,9 @@ export class AccumulatorService {
     return this.accumulatorRepository.findOneBy({ id })
   }
 
-  update(id: number, updateAccumulatorDto: UpdateAccumulatorDto) {
-    return `This action updates a #${id} accumulator`;
+  async update(id: number, updateAccumulatorDto: UpdateAccumulatorDto) {
+    await this.accumulatorRepository.update(id, updateAccumulatorDto)
+    return this.accumulatorRepository.findOneBy({ id })
   }
 
   remove(id: number) {

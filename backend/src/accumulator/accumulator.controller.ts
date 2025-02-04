@@ -23,7 +23,7 @@ export class AccumulatorController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccumulatorDto: UpdateAccumulatorDto) {
+  async update(@Param('id') id: string, @Body() updateAccumulatorDto: UpdateAccumulatorDto) {
     return this.accumulatorService.update(+id, updateAccumulatorDto);
   }
 
