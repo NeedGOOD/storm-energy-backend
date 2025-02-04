@@ -18,7 +18,7 @@ export class AccumulatorController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.accumulatorService.findOne(+id);
   }
 
