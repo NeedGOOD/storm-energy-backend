@@ -28,7 +28,7 @@ export class AccumulatorController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.accumulatorService.remove(+id);
   }
 }

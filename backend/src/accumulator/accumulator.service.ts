@@ -31,7 +31,7 @@ export class AccumulatorService {
     return this.accumulatorRepository.findOneBy({ id })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} accumulator`;
+  async remove(id: number) {
+    await this.accumulatorRepository.delete(id)
   }
 }
