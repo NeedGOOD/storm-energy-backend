@@ -31,7 +31,7 @@ export class WindmillsService {
     return this.windmillsRepository.findOneBy({ id })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} windmill`;
+  async remove(id: number) {
+    await this.windmillsRepository.delete(id)
   }
 }

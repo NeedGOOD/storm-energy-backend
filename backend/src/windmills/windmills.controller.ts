@@ -28,7 +28,7 @@ export class WindmillsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.windmillsService.remove(+id);
   }
 }
