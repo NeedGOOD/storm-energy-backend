@@ -26,8 +26,9 @@ export class SolarpanelService {
     return this.solarPanelRepository.findOneBy({ id })
   }
 
-  update(id: number, updateSolarpanelDto: UpdateSolarpanelDto) {
-    return `This action updates a #${id} solarpanel`;
+  async update(id: number, updateSolarpanelDto: UpdateSolarpanelDto) {
+    await this.solarPanelRepository.update(id, updateSolarpanelDto)
+    return this.solarPanelRepository.findOneBy({ id })
   }
 
   remove(id: number) {

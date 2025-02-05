@@ -23,7 +23,7 @@ export class SolarpanelController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSolarpanelDto: UpdateSolarpanelDto) {
+  async update(@Param('id') id: string, @Body() updateSolarpanelDto: UpdateSolarpanelDto) {
     return this.solarpanelService.update(+id, updateSolarpanelDto);
   }
 
