@@ -22,8 +22,8 @@ export class SolarpanelService {
     return this.solarPanelRepository.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} solarpanel`;
+  async findOne(id: number) {
+    return this.solarPanelRepository.findOneBy({ id })
   }
 
   update(id: number, updateSolarpanelDto: UpdateSolarpanelDto) {

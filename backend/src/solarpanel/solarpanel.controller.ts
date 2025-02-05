@@ -18,7 +18,7 @@ export class SolarpanelController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.solarpanelService.findOne(+id);
   }
 
