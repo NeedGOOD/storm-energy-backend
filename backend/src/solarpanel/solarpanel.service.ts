@@ -31,7 +31,7 @@ export class SolarpanelService {
     return this.solarPanelRepository.findOneBy({ id })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} solarpanel`;
+  async remove(id: number) {
+    this.solarPanelRepository.delete(id)
   }
 }

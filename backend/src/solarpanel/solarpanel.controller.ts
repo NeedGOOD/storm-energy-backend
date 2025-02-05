@@ -28,7 +28,7 @@ export class SolarpanelController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.solarpanelService.remove(+id);
   }
 }
