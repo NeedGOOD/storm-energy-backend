@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { System } from "src/system/entities/system.entity";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'accumulator' })
 export class Accumulator {
@@ -11,4 +12,7 @@ export class Accumulator {
 
     @Column({ type: 'boolean', name: 'state', nullable: false })
     state: boolean
+
+    @OneToOne(() => System, (system) => system.accumulator)
+    system: System
 }

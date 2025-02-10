@@ -9,21 +9,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class AccumulatorService {
   constructor(
     @InjectRepository(Accumulator)
-    private readonly accumulatorRepository: Repository<Accumulator>,
-    private readonly entityManager: EntityManager
+    private readonly accumulatorRepository: Repository<Accumulator>
   ) { }
 
   async create(createAccumulatorDto: CreateAccumulatorDto) {
-    const accumulator = new Accumulator(createAccumulatorDto)
-    await this.entityManager.save(accumulator)
+    const accumulator = await this.accumulatorRepository.create(createAccumulatorDto)
+    await this.accumulatorRepository.save(accumulator)
   }
 
   async findAll() {
-    return this.accumulatorRepository.find()
+    return this.accumulatorRepository.find({ relations: { system: true } })
   }
 
   async findOne(id: number) {
-    return this.accumulatorRepository.findOneBy({ id })
+    return this.accumulatorRepository.findOne({
+      where: { id },
+      relations: { system: true }
+    })
   }
 
   async update(id: number, updateAccumulatorDto: UpdateAccumulatorDto) {

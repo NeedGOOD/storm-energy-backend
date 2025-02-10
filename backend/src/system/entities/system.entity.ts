@@ -1,3 +1,4 @@
+import { Accumulator } from "src/accumulator/entities/accumulator.entity";
 import { Solarpanel } from "src/solarpanel/entities/solarpanel.entity";
 import { Users } from "src/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -16,4 +17,8 @@ export class System {
   @OneToOne(() => Solarpanel, (solarPanel) => solarPanel.system, { onDelete: 'CASCADE' })
   @JoinColumn()
   solarPanel: Solarpanel
+
+  @OneToOne(() => Accumulator, (accumulator) => accumulator.system, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  accumulator: Accumulator
 }

@@ -8,5 +8,6 @@ import { Accumulator } from './entities/accumulator.entity';
   imports: [TypeOrmModule.forFeature([Accumulator])],
   controllers: [AccumulatorController],
   providers: [AccumulatorService],
+  exports: [AccumulatorService]
 })
 export class AccumulatorModule { }
