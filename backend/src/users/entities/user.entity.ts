@@ -1,11 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { System } from "src/system/entities/system.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class Users {
-  constructor(item: Partial<Users>) {
-    Object.assign(this, item)
-  }
-
   @PrimaryGeneratedColumn('increment')
   id: number
 
@@ -23,4 +20,7 @@ export class Users {
 
   @Column({ type: 'enum', enum: ['Admin', 'User'], nullable: false })
   role: string
+
+  @OneToMany(() => System, (system) => system.user)
+  systems: System[]
 }

@@ -9,21 +9,23 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private readonly usersRepository: Repository<Users>,
-    private readonly entityManager: EntityManager
+    private readonly usersRepository: Repository<Users>
   ) { }
 
   async createUser(createUserDto: CreateUserDto) {
-    const user = new Users(createUserDto)
-    await this.entityManager.save(user)
+    const user = this.usersRepository.create(createUserDto)
+    return await this.usersRepository.save(user)
   }
 
   async findAll() {
-    return this.usersRepository.find()
+    return this.usersRepository.find({ relations: { systems: true } })
   }
 
   async findOne(id: number) {
-    return this.usersRepository.findOneBy({ id })
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: { systems: true }
+    })
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
