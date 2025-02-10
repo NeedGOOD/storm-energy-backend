@@ -5,6 +5,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { System } from './entities/system.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/users/entities/user.entity';
+import { Solarpanel } from 'src/solarpanel/entities/solarpanel.entity';
 
 @Injectable()
 export class SystemService {
@@ -12,7 +13,9 @@ export class SystemService {
     @InjectRepository(System)
     private readonly systemRepository: Repository<System>,
     @InjectRepository(Users)
-    private readonly usersRepository: Repository<Users>
+    private readonly usersRepository: Repository<Users>,
+    @InjectRepository(Solarpanel)
+    private readonly solarPanelRepository: Repository<Solarpanel>
   ) { }
 
   async createSystem(createSystemDto: CreateSystemDto) {
@@ -22,22 +25,25 @@ export class SystemService {
       throw new Error('User not found')
     }
 
+    const solarPanel = await this.solarPanelRepository.findOne({ where: { id: createSystemDto.solarPanelId }})
+
     const system = this.systemRepository.create({
       ...createSystemDto,
-      user: user
+      user: user,
+      solarPanel: solarPanel,
     })
 
     return await this.systemRepository.save(system)
   }
 
   async findAll() {
-    return this.systemRepository.find({ relations: { user: true } })
+    return this.systemRepository.find({ relations: { user: true, solarPanel: true } })
   }
 
   async findOne(id: number) {
     return this.systemRepository.findOne({
       where: { id },
-      relations: { user: true }
+      relations: { user: true, solarPanel: true }
     })
   }
 

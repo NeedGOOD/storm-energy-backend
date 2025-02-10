@@ -9,21 +9,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class SolarpanelService {
   constructor(
     @InjectRepository(Solarpanel)
-    private readonly solarPanelRepository: Repository<Solarpanel>,
-    private readonly entityManager: EntityManager
+    private readonly solarPanelRepository: Repository<Solarpanel>
   ) { }
 
   async create(createSolarpanelDto: CreateSolarpanelDto) {
-    const solarPanel = new Solarpanel(createSolarpanelDto)
-    await this.entityManager.save(solarPanel)
+    const solarPanel = this.solarPanelRepository.create(createSolarpanelDto)
+    return await this.solarPanelRepository.save(solarPanel)
   }
 
   async findAll() {
-    return this.solarPanelRepository.find()
+    return this.solarPanelRepository.find({ relations: { system: true } })
   }
 
   async findOne(id: number) {
-    return this.solarPanelRepository.findOneBy({ id })
+    return this.solarPanelRepository.findOne({
+      where: { id },
+      relations: { system: true }
+    })
   }
 
   async update(id: number, updateSolarpanelDto: UpdateSolarpanelDto) {

@@ -1,11 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { System } from "src/system/entities/system.entity";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'solarpanel' })
 export class Solarpanel {
-    constructor(item: Partial<Solarpanel>) {
-        Object.assign(this, item)
-    }
-
     @PrimaryGeneratedColumn('increment')
     id: number
 
@@ -20,4 +17,7 @@ export class Solarpanel {
 
     @Column({ type: 'float8', name: 'cost', nullable: false })
     cost: number
+
+    @OneToOne(() => System, (system) => system.solarPanel)
+    system: System
 }

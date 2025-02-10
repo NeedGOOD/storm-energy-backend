@@ -1,5 +1,6 @@
+import { Solarpanel } from "src/solarpanel/entities/solarpanel.entity";
 import { Users } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'system' })
 export class System {
@@ -11,4 +12,8 @@ export class System {
 
   @ManyToOne(() => Users, (user) => user.systems, { onDelete: 'CASCADE' })
   user: Users
+
+  @OneToOne(() => Solarpanel, (solarPanel) => solarPanel.system, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  solarPanel: Solarpanel
 }

@@ -8,5 +8,6 @@ import { Solarpanel as SolarPanel } from './entities/solarpanel.entity';
   imports: [TypeOrmModule.forFeature([SolarPanel])],
   controllers: [SolarpanelController],
   providers: [SolarpanelService],
+  exports: [SolarpanelService]
 })
 export class SolarpanelModule { }
