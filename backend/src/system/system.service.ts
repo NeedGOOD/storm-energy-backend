@@ -41,8 +41,9 @@ export class SystemService {
     })
   }
 
-  update(id: number, updateSystemDto: UpdateSystemDto) {
-    return `This action updates a #${id} system`;
+  async update(id: number, updateSystemDto: UpdateSystemDto) {
+    await this.systemRepository.update(id, updateSystemDto)
+    return this.systemRepository.findOneBy({ id })
   }
 
   remove(id: number) {

@@ -23,7 +23,7 @@ export class SystemController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSystemDto: UpdateSystemDto) {
+  async update(@Param('id') id: string, @Body() updateSystemDto: UpdateSystemDto) {
     return this.systemService.update(+id, updateSystemDto);
   }
 
