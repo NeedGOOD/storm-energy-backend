@@ -46,7 +46,7 @@ export class SystemService {
     return this.systemRepository.findOneBy({ id })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} system`;
+  async remove(id: number) {
+    return this.systemRepository.delete(id)
   }
 }
