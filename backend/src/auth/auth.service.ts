@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 type SignInData = { userId: number; email: string }
 type AuthResult = { accessToken: string; userId: number; email: string }
@@ -28,7 +29,9 @@ export class AuthService {
       email: loginAuthDto.email
     });
 
-    if (user && user.password === loginAuthDto.password) {
+    await this.verificationPassword(loginAuthDto.password, user.password)
+
+    if (user) {
       return {
         userId: user.id,
         email: user.email
@@ -42,10 +45,18 @@ export class AuthService {
     const tokenPayload = {
       sub: user.userId,
       email: user.email
+    };
+
+    const accessToken = await this.jwtService.signAsync(tokenPayload);
+
+    return { accessToken, userId: user.userId, email: user.email };
+  }
+
+  async verificationPassword(password: string, hashedPassword: string): Promise<void> {
+    const checkingPassword = await bcrypt.compare(password, hashedPassword)
+
+    if (!checkingPassword) {
+      throw new UnauthorizedException('Incorrect password.');
     }
-
-    const accessToken = await this.jwtService.signAsync(tokenPayload)
-
-    return { accessToken, userId: user.userId, email: user.email }
   }
 }
