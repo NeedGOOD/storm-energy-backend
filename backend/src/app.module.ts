@@ -8,6 +8,7 @@ import { SystemModule } from './system/system.module';
 import { AccumulatorModule } from './accumulator/accumulator.module';
 import { WindmillsModule } from './windmills/windmills.module';
 import { SolarpanelModule } from './solarpanel/solarpanel.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { SolarpanelModule } from './solarpanel/solarpanel.module';
     SystemModule,
     AccumulatorModule,
     WindmillsModule,
-    SolarpanelModule
+    SolarpanelModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

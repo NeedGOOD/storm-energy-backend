@@ -18,7 +18,7 @@ export class Users {
   @Column({ type: 'varchar', length: 255, name: 'password', nullable: false })
   password: string
 
-  @Column({ type: 'enum', enum: ['Admin', 'User'], nullable: false })
+  @Column({ type: 'enum', enum: ['admin', 'user'], nullable: false })
   role: string
 
   @OneToMany(() => System, (system) => system.user)

@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +27,23 @@ export class UsersService {
       where: { id },
       relations: { systems: true }
     })
+  }
+
+  async findUsersByFilter(filters: Partial<FilterUserDto>) {
+    const where: FilterUserDto = { ...filters }
+
+    Object.keys(where).forEach(key => where[key] === undefined && delete where[key])
+
+    const user = await this.usersRepository.findOne({
+      where,
+      relations: { systems: true }
+    })
+
+    if (!user) {
+      throw new BadRequestException('User not found by filter')
+    }
+
+    return user
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
