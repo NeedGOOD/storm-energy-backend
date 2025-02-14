@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -13,29 +13,29 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) { }
 
-  async authenticate(createAuthDto: LoginAuthDto): Promise<AuthResult> {
-    const user = await this.validateUser(createAuthDto)
+  async authenticate(loginAuthDto: LoginAuthDto): Promise<AuthResult> {
+    const user = await this.validateUser(loginAuthDto);
 
     if (!user) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('Password does not match.');
     }
 
-    return this.signIn(user)
+    return this.signIn(user);
   }
 
-  async validateUser(createAuthDto: LoginAuthDto): Promise<SignInData | null> {
-    const user = await this.usersService.findUsersByFilter({
-      email: createAuthDto.email
-    })
+  async validateUser(loginAuthDto: LoginAuthDto): Promise<SignInData | null> {
+    const user = await this.usersService.findUserByFilter({
+      email: loginAuthDto.email
+    });
 
-    if (user && user.password === createAuthDto.password) {
+    if (user && user.password === loginAuthDto.password) {
       return {
         userId: user.id,
         email: user.email
-      }
+      };
     }
 
-    return null
+    return null;
   }
 
   async signIn(user: SignInData): Promise<AuthResult> {

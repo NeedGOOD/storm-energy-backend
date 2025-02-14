@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
@@ -14,36 +14,53 @@ export class UsersService {
   ) { }
 
   async createUser(createUserDto: CreateUserDto) {
-    const user = this.usersRepository.create(createUserDto)
-    return await this.usersRepository.save(user)
+    try {
+      const user = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
+
+      if (user) {
+        throw new ConflictException('The user with this email already exists.');
+      }
+
+      const createUser = this.usersRepository.create(createUserDto);
+
+      return await this.usersRepository.save(createUser);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+
+      throw new BadRequestException('Failed to create user.');
+    }
   }
 
   async findAll() {
-    return this.usersRepository.find({ relations: { systems: true } })
+    return this.usersRepository.find({ relations: { systems: true } });
   }
 
   async findOne(id: number) {
-    return this.usersRepository.findOne({
-      where: { id },
-      relations: { systems: true }
-    })
+    try {
+      return await this.usersRepository.findOneOrFail({
+        where: { id },
+        relations: { systems: true }
+      });
+    } catch (error) {
+      throw new NotFoundException('User not found by id.');
+    }
   }
 
-  async findUsersByFilter(filters: Partial<FilterUserDto>) {
-    const where: FilterUserDto = { ...filters }
+  async findUserByFilter(filters: Partial<FilterUserDto>) {
+    const where: FilterUserDto = { ...filters };
 
-    Object.keys(where).forEach(key => where[key] === undefined && delete where[key])
+    Object.keys(where).forEach(key => where[key] === undefined && delete where[key]);
 
-    const user = await this.usersRepository.findOne({
-      where,
-      relations: { systems: true }
-    })
-
-    if (!user) {
-      throw new BadRequestException('User not found by filter')
+    try {
+      return await this.usersRepository.findOneOrFail({
+        where,
+        relations: { systems: true }
+      });
+    } catch (error) {
+      throw new NotFoundException('User not found by filter.');
     }
-
-    return user
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
