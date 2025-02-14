@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,7 +28,7 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string, @Request() req) {
     if (req.user.userId !== +id) {
-      throw new ForbiddenException('You can only access your own data.');
+      throw new UnauthorizedException('You can only access your own data.');
     }
     return this.usersService.findOne(+id);
   }
