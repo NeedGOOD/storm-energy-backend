@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
@@ -36,6 +37,11 @@ export class UsersController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
+  }
+
+  @Patch('update-password/:id')
+  updatePassword(@Param('id') id: number, @Body() updatePasswordDto: UpdatePasswordDto) {
+    return this.usersService.updatePassword(id, updatePasswordDto);
   }
 
   @Delete(':id')
