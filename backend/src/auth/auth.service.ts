@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -10,6 +10,7 @@ type AuthResult = { accessToken: string; userId: number; email: string }
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService
   ) { }
@@ -29,7 +30,7 @@ export class AuthService {
       email: loginAuthDto.email
     });
 
-    await this.verificationPassword(loginAuthDto.password, user.password)
+    await AuthService.verificationPassword(loginAuthDto.password, user.password)
 
     if (user) {
       return {
@@ -52,7 +53,7 @@ export class AuthService {
     return { accessToken, userId: user.userId, email: user.email };
   }
 
-  async verificationPassword(password: string, hashedPassword: string): Promise<void> {
+  static async verificationPassword(password: string, hashedPassword: string): Promise<void> {
     const checkingPassword = await bcrypt.compare(password, hashedPassword)
 
     if (!checkingPassword) {

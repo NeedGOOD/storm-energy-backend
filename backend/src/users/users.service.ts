@@ -1,11 +1,12 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -75,28 +76,18 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id })
   }
 
-  async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto) {
-    const { oldPassword, newPassword, confirmPassword } = updatePasswordDto;
+  async updatePassword(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
+    const { oldPassword, newPassword } = updateUserPasswordDto;
 
-    if (newPassword !== confirmPassword) {
-      throw new UnauthorizedException('Passwords do not match');
-    }
+    const user = await this.findOne(id);
 
-    const user = await this.usersRepository.findOneBy({ id });
-
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-
-    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
-    if (!isOldPasswordValid) {
-      throw new UnauthorizedException('Incorrect password');
-    }
+    await AuthService.verificationPassword(oldPassword, user.password);
 
     const hashedNewPassword = await this.hashingPassword(newPassword);
-    user.password = hashedNewPassword;
-    await this.usersRepository.save(user);
+    const userToUpdate: UpdateUserDto = { password: hashedNewPassword };
 
+    await this.usersRepository.update(id, userToUpdate);
+    return this.usersRepository.findOneBy({ id });
   }
 
   async remove(id: number) {
