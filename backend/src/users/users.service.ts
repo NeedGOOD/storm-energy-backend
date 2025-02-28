@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Not, Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
@@ -85,29 +85,37 @@ export class UsersService {
     try {
       await this.usersRepository.update(id, updateUserDto);
 
-      return this.usersRepository.findOneBy({ id });
+      return this.findOne(id);
     } catch (error) {
       throw new ConflictException('The user with this email already exists.');
     }
   }
 
   async updatePassword(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
-    const { oldPassword, newPassword } = updateUserPasswordDto;
-
     const user = await this.findOne(id);
 
-    await AuthService.verificationPassword(oldPassword, user.password);
+    const password: UpdateUserPasswordDto = updateUserPasswordDto;
 
-    const hashedNewPassword = await this.hashingPassword(newPassword);
-    const userToUpdate: UpdateUserDto = { password: hashedNewPassword };
+    await AuthService.verificationPassword(password.oldPassword, user.password);
 
-    await this.usersRepository.update(id, userToUpdate);
-    return this.usersRepository.findOneBy({ id });
+    if (password.newPassword !== password.confirmPassword) {
+      throw new UnauthorizedException('Passwords do not match.');
+    }
+
+    try {
+      const hashedNewPassword = await this.hashingPassword(password.newPassword);
+
+      await this.usersRepository.update(id, { password: hashedNewPassword });
+
+      return this.findOne(id);
+    } catch (error) {
+      throw new UnauthorizedException('Error updating password.');
+    }
   }
 
-  async remove(id: number) {
-    return this.usersRepository.delete(id)
-  }
+  // async remove(id: number) {
+  //   return this.usersRepository.delete(id);
+  // }
 
   async hashingPassword(password: string) {
     const salt = 10;

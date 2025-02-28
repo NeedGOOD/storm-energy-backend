@@ -57,8 +57,8 @@ export class UsersController {
     return this.usersService.updatePassword(id, updateUserPasswordDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id', ParseIntPipe) id: number) {
+  //   return this.usersService.remove(id);
+  // }
 }
