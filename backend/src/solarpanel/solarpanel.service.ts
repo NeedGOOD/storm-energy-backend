@@ -33,14 +33,18 @@ export class SolarpanelService {
   }
 
   async findAll() {
-    return this.solarPanelRepository.find({ relations: { system: true } })
+    return this.solarPanelRepository.find({ relations: { system: true } });
   }
 
   async findOne(id: number) {
-    return this.solarPanelRepository.findOne({
-      where: { id },
-      relations: { system: true }
-    })
+    try {
+      return await this.solarPanelRepository.findOneOrFail({
+        where: { id },
+        relations: { system: true }
+      });
+    } catch (error) {
+      throw new NotFoundException('Solar panel not found by id.');
+    }
   }
 
   async findSolarPanelByFilter(filters: Partial<FilterSolarpanelDto>) {
@@ -59,11 +63,11 @@ export class SolarpanelService {
   }
 
   async update(id: number, updateSolarpanelDto: UpdateSolarpanelDto) {
-    await this.solarPanelRepository.update(id, updateSolarpanelDto)
-    return this.solarPanelRepository.findOneBy({ id })
+    await this.solarPanelRepository.update(id, updateSolarpanelDto);
+    return this.solarPanelRepository.findOneBy({ id });
   }
 
   async remove(id: number) {
-    this.solarPanelRepository.delete(id)
+    this.solarPanelRepository.delete(id);
   }
 }

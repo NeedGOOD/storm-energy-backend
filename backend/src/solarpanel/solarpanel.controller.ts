@@ -9,12 +9,12 @@ export class SolarpanelController {
   constructor(private readonly solarpanelService: SolarpanelService) { }
 
   @Post()
-  async create(@Body() createSolarpanelDto: CreateSolarpanelDto) {
+  create(@Body() createSolarpanelDto: CreateSolarpanelDto) {
     return this.solarpanelService.create(createSolarpanelDto);
   }
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.solarpanelService.findAll();
   }
 
@@ -24,17 +24,17 @@ export class SolarpanelController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.solarpanelService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSolarpanelDto: UpdateSolarpanelDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateSolarpanelDto: UpdateSolarpanelDto) {
     return this.solarpanelService.update(id, updateSolarpanelDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.solarpanelService.remove(id);
   }
 }
