@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,7 +18,7 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto) {
     try {
-      const user = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
+      const user = await this.usersRepository.findOneBy({ email: createUserDto.email });
 
       if (user) {
         throw new ConflictException('The user with this email already exists.');
@@ -72,8 +72,23 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.usersRepository.update(id, updateUserDto)
-    return this.usersRepository.findOneBy({ id })
+    await this.findOne(id);
+
+    if (updateUserDto.email) {
+      const existingUser = await this.usersRepository.findOneBy({ email: updateUserDto.email });
+
+      if (existingUser && existingUser.id === id) {
+        throw new ConflictException('Your email has the same name.');
+      }
+    }
+
+    try {
+      await this.usersRepository.update(id, updateUserDto);
+
+      return this.usersRepository.findOneBy({ id });
+    } catch (error) {
+      throw new ConflictException('The user with this email already exists.');
+    }
   }
 
   async updatePassword(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
