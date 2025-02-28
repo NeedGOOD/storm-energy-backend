@@ -1,6 +1,6 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -87,7 +87,7 @@ export class UsersService {
 
       return this.findOne(id);
     } catch (error) {
-      throw new ConflictException('The user with this email already exists.');
+      throw new InternalServerErrorException('Error updating user.');
     }
   }
 

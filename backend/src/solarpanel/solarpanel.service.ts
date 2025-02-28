@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateSolarpanelDto } from './dto/create-solarpanel.dto';
 import { UpdateSolarpanelDto } from './dto/update-solarpanel.dto';
 import { Repository } from 'typeorm';
@@ -63,8 +63,15 @@ export class SolarpanelService {
   }
 
   async update(id: number, updateSolarpanelDto: UpdateSolarpanelDto) {
-    await this.solarPanelRepository.update(id, updateSolarpanelDto);
-    return this.solarPanelRepository.findOneBy({ id });
+    await this.findOne(id);
+
+    try {
+      await this.solarPanelRepository.update(id, updateSolarpanelDto);
+
+      return this.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating solar panel.');
+    }
   }
 
   async remove(id: number) {
