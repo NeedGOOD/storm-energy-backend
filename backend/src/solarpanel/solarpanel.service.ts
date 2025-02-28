@@ -28,12 +28,12 @@ export class SolarpanelService {
 
       return await this.solarPanelRepository.save(solarPanel);
     } catch (error) {
-      throw new ConflictException();
+      throw new ConflictException('Failed to create solar panel.');
     }
   }
 
   async findAll() {
-    return this.solarPanelRepository.find({ relations: { system: true } });
+    return await this.solarPanelRepository.find({ relations: { system: true } });
   }
 
   async findOne(id: number) {
@@ -68,13 +68,15 @@ export class SolarpanelService {
     try {
       await this.solarPanelRepository.update(id, updateSolarpanelDto);
 
-      return this.findOne(id);
+      return await this.findOne(id);
     } catch (error) {
       throw new InternalServerErrorException('Error updating solar panel.');
     }
   }
 
   async remove(id: number) {
-    this.solarPanelRepository.delete(id);
+    await this.findOne(id);
+
+    await this.solarPanelRepository.delete(id);
   }
 }
