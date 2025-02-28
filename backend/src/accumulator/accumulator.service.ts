@@ -50,6 +50,8 @@ export class AccumulatorService {
   }
 
   async remove(id: number) {
-    await this.accumulatorRepository.delete(id)
+    await this.findOne(id);
+
+    await this.accumulatorRepository.delete(id);
   }
 }
