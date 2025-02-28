@@ -38,8 +38,15 @@ export class AccumulatorService {
   }
 
   async update(id: number, updateAccumulatorDto: UpdateAccumulatorDto) {
-    await this.accumulatorRepository.update(id, updateAccumulatorDto)
-    return this.accumulatorRepository.findOneBy({ id })
+    await this.findOne(id);
+
+    try {
+      await this.accumulatorRepository.update(id, updateAccumulatorDto);
+
+      return await this.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating accumulator.');
+    }
   }
 
   async remove(id: number) {
