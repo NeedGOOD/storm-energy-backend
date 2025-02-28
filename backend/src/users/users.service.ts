@@ -42,7 +42,7 @@ export class UsersService {
   }
 
   async findAll() {
-    return this.usersRepository.find({ relations: { systems: true } });
+    return await this.usersRepository.find({ relations: { systems: true } });
   }
 
   async findOne(id: number) {
@@ -85,7 +85,7 @@ export class UsersService {
     try {
       await this.usersRepository.update(id, updateUserDto);
 
-      return this.findOne(id);
+      return await this.findOne(id);
     } catch (error) {
       throw new InternalServerErrorException('Error updating user.');
     }
@@ -107,7 +107,7 @@ export class UsersService {
 
       await this.usersRepository.update(id, { password: hashedNewPassword });
 
-      return this.findOne(id);
+      return await this.findOne(id);
     } catch (error) {
       throw new UnauthorizedException('Error updating password.');
     }
