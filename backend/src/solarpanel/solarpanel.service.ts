@@ -14,7 +14,7 @@ export class SolarpanelService {
   ) { }
 
   async create(createSolarpanelDto: CreateSolarpanelDto) {
-    const solarPanel = await this.findSolarPanelByFilter({
+    const solarPanel = await this.solarPanelRepository.findOneBy({
       name: createSolarpanelDto.name,
       model: createSolarpanelDto.model
     });
