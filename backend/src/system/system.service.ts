@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateSystemDto } from './dto/create-system.dto';
 import { UpdateSystemDto } from './dto/update-system.dto';
 import { Repository } from 'typeorm';
@@ -50,10 +50,18 @@ export class SystemService {
   }
 
   async findOne(id: number) {
-    return this.systemRepository.findOne({
-      where: { id },
-      relations: { user: true, solarPanel: true, accumulator: true }
-    })
+    try {
+      return await this.systemRepository.findOneOrFail({
+        where: { id },
+        relations: {
+          user: true,
+          solarPanel: true,
+          accumulator: true
+        }
+      });
+    } catch (error) {
+      throw new NotFoundException('System not found by id.');
+    }
   }
 
   async update(id: number, updateSystemDto: UpdateSystemDto) {

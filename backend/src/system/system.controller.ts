@@ -8,27 +8,27 @@ export class SystemController {
   constructor(private readonly systemService: SystemService) { }
 
   @Post()
-  async create(@Body() createSystemDto: CreateSystemDto) {
+  create(@Body() createSystemDto: CreateSystemDto) {
     return this.systemService.createSystem(createSystemDto);
   }
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.systemService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.systemService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateSystemDto: UpdateSystemDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateSystemDto: UpdateSystemDto) {
     return this.systemService.update(id, updateSystemDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.systemService.remove(id);
   }
 }
