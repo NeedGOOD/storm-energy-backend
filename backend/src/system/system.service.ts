@@ -65,8 +65,15 @@ export class SystemService {
   }
 
   async update(id: number, updateSystemDto: UpdateSystemDto) {
-    await this.systemRepository.update(id, updateSystemDto)
-    return this.systemRepository.findOneBy({ id })
+    await this.findOne(id);
+
+    try {
+      await this.systemRepository.update(id, updateSystemDto);
+
+      return await this.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating system.');
+    }
   }
 
   async remove(id: number) {
