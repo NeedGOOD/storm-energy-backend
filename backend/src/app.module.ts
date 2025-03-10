@@ -9,6 +9,8 @@ import { AccumulatorModule } from './accumulator/accumulator.module';
 import { WindmillsModule } from './windmills/windmills.module';
 import { SolarpanelModule } from './solarpanel/solarpanel.module';
 import { AuthModule } from './auth/auth.module';
+import { MqttModule } from './mqtt/mqtt.module';
+import { InfluxService } from './influx/influx/influx.service';
 
 @Module({
   imports: [
@@ -19,9 +21,10 @@ import { AuthModule } from './auth/auth.module';
     AccumulatorModule,
     WindmillsModule,
     SolarpanelModule,
-    AuthModule
+    AuthModule,
+    MqttModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, InfluxService],
 })
 export class AppModule { }
