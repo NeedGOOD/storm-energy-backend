@@ -47,6 +47,20 @@ export class UsersService {
 
   async findOne(id: number) {
     try {
+      const user = await this.usersRepository.findOneOrFail({
+        where: { id },
+        relations: { systems: true }
+      });
+
+      const { password, ...userWithoutPasword } = user;
+      return userWithoutPasword;
+    } catch (error) {
+      throw new NotFoundException('User not found by id.');
+    }
+  }
+
+  async findOneWithPassword(id: number) {
+    try {
       return await this.usersRepository.findOneOrFail({
         where: { id },
         relations: { systems: true }
@@ -92,7 +106,7 @@ export class UsersService {
   }
 
   async updatePassword(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
-    const user = await this.findOne(id);
+    const user = await this.findOneWithPassword(id);
 
     const password: UpdateUserPasswordDto = updateUserPasswordDto;
 
