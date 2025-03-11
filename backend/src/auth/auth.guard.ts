@@ -8,23 +8,23 @@ export class AuthGuard implements CanActivate {
   async canActivate(
     context: ExecutionContext,
   ) {
-    const request = context.switchToHttp().getRequest()
-    const authorization = request.headers.authorization
-    const token = authorization?.split(' ')[1]
+    const request = context.switchToHttp().getRequest();
+    const authorization = request.headers.authorization;
+    const token = authorization?.split(' ')[1];
 
     if (!token) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('Token is missing or invalid');
     }
 
     try {
-      const tokenPayload = await this.jwtService.verifyAsync(token)
+      const tokenPayload = await this.jwtService.verifyAsync(token);
       request.user = {
         userId: tokenPayload.sub,
-        email: tokenPayload.email
-      }
-      return true
+        email: tokenPayload.email,
+      };
+      return true;
     } catch (error) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('GUARD ERROR');
     }
   }
 }

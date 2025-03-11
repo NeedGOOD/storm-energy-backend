@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { SystemService } from './system.service';
 import { CreateSystemDto } from './dto/create-system.dto';
 import { UpdateSystemDto } from './dto/update-system.dto';
@@ -8,27 +8,27 @@ export class SystemController {
   constructor(private readonly systemService: SystemService) { }
 
   @Post()
-  async create(@Body() createSystemDto: CreateSystemDto) {
+  create(@Body() createSystemDto: CreateSystemDto) {
     return this.systemService.createSystem(createSystemDto);
   }
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.systemService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.systemService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.systemService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateSystemDto: UpdateSystemDto) {
-    return this.systemService.update(+id, updateSystemDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateSystemDto: UpdateSystemDto) {
+    return this.systemService.update(id, updateSystemDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.systemService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.systemService.remove(id);
   }
 }

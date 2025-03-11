@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
@@ -18,7 +18,7 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto) {
     try {
-      const user = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
+      const user = await this.usersRepository.findOneBy({ email: createUserDto.email });
 
       if (user) {
         throw new ConflictException('The user with this email already exists.');
@@ -42,7 +42,7 @@ export class UsersService {
   }
 
   async findAll() {
-    return this.usersRepository.find({ relations: { systems: true } });
+    return await this.usersRepository.find({ relations: { systems: true } });
   }
 
   async findOne(id: number) {
@@ -72,27 +72,50 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.usersRepository.update(id, updateUserDto)
-    return this.usersRepository.findOneBy({ id })
+    await this.findOne(id);
+
+    if (updateUserDto.email) {
+      const existingUser = await this.usersRepository.findOneBy({ email: updateUserDto.email });
+
+      if (existingUser && existingUser.id === id) {
+        throw new ConflictException('Your email has the same name.');
+      }
+    }
+
+    try {
+      await this.usersRepository.update(id, updateUserDto);
+
+      return await this.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating user.');
+    }
   }
 
   async updatePassword(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
-    const { oldPassword, newPassword } = updateUserPasswordDto;
-
     const user = await this.findOne(id);
 
-    await AuthService.verificationPassword(oldPassword, user.password);
+    const password: UpdateUserPasswordDto = updateUserPasswordDto;
 
-    const hashedNewPassword = await this.hashingPassword(newPassword);
-    const userToUpdate: UpdateUserDto = { password: hashedNewPassword };
+    await AuthService.verificationPassword(password.oldPassword, user.password);
 
-    await this.usersRepository.update(id, userToUpdate);
-    return this.usersRepository.findOneBy({ id });
+    if (password.newPassword !== password.confirmPassword) {
+      throw new UnauthorizedException('Passwords do not match.');
+    }
+
+    try {
+      const hashedNewPassword = await this.hashingPassword(password.newPassword);
+
+      await this.usersRepository.update(id, { password: hashedNewPassword });
+
+      return await this.findOne(id);
+    } catch (error) {
+      throw new UnauthorizedException('Error updating password.');
+    }
   }
 
-  async remove(id: number) {
-    return this.usersRepository.delete(id)
-  }
+  // async remove(id: number) {
+  //   return this.usersRepository.delete(id);
+  // }
 
   async hashingPassword(password: string) {
     const salt = 10;

@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+  ParseIntPipe
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -22,30 +35,30 @@ export class UsersController {
 
   @Get('filter')
   findUserByFilter(@Query() filters: FilterUserDto) {
-    return this.usersService.findUserByFilter(filters)
+    return this.usersService.findUserByFilter(filters);
   }
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
-    if (req.user.userId !== +id) {
+  findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    if (req.user.userId !== id) {
       throw new UnauthorizedException('You can only access your own data.');
     }
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Patch('update-password/:id')
-  updatePassword(@Param('id') id: number, @Body() updateUserPasswordDto: UpdateUserPasswordDto) {
+  updatePassword(@Param('id', ParseIntPipe) id: number, @Body() updateUserPasswordDto: UpdateUserPasswordDto) {
     return this.usersService.updatePassword(id, updateUserPasswordDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id', ParseIntPipe) id: number) {
+  //   return this.usersService.remove(id);
+  // }
 }

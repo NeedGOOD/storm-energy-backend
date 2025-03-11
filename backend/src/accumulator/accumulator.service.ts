@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateAccumulatorDto } from './dto/create-accumulator.dto';
 import { UpdateAccumulatorDto } from './dto/update-accumulator.dto';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Accumulator } from './entities/accumulator.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -13,27 +13,45 @@ export class AccumulatorService {
   ) { }
 
   async create(createAccumulatorDto: CreateAccumulatorDto) {
-    const accumulator = await this.accumulatorRepository.create(createAccumulatorDto)
-    await this.accumulatorRepository.save(accumulator)
+    try {
+      const accumulator = this.accumulatorRepository.create(createAccumulatorDto);
+
+      return await this.accumulatorRepository.save(accumulator);
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating accumulator.');
+    }
   }
 
   async findAll() {
-    return this.accumulatorRepository.find({ relations: { system: true } })
+    return await this.accumulatorRepository.find({ relations: { system: true } });
   }
 
   async findOne(id: number) {
-    return this.accumulatorRepository.findOne({
-      where: { id },
-      relations: { system: true }
-    })
+    try {
+      return await this.accumulatorRepository.findOneOrFail({
+        where: { id },
+        relations: { system: true }
+      });
+    } catch (error) {
+      throw new NotFoundException('Accumulator not found by id.');
+    }
   }
 
   async update(id: number, updateAccumulatorDto: UpdateAccumulatorDto) {
-    await this.accumulatorRepository.update(id, updateAccumulatorDto)
-    return this.accumulatorRepository.findOneBy({ id })
+    await this.findOne(id);
+
+    try {
+      await this.accumulatorRepository.update(id, updateAccumulatorDto);
+
+      return await this.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating accumulator.');
+    }
   }
 
   async remove(id: number) {
-    await this.accumulatorRepository.delete(id)
+    await this.findOne(id);
+
+    await this.accumulatorRepository.delete(id);
   }
 }

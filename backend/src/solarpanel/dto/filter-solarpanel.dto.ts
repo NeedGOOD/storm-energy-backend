@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateSolarpanelDto } from './create-solarpanel.dto';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateSolarpanelDto extends PartialType(CreateSolarpanelDto) {
+export class FilterSolarpanelDto extends PartialType(CreateSolarpanelDto) {
   @IsString()
   @IsOptional()
   name?: string;

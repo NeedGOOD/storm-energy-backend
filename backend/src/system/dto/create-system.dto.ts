@@ -1,6 +1,19 @@
+import { IsInt, IsNotEmpty, IsString } from "class-validator";
+
 export class CreateSystemDto {
-  location: string
-  userId: number
-  solarPanelId: number
-  accumulatorId: number
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  solarPanelId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  accumulatorId: number;
 }

@@ -1,3 +1,7 @@
+import { IsBoolean, IsNotEmpty } from "class-validator";
+
 export class CreateAccumulatorDto {
-    state: boolean
+  @IsBoolean()
+  @IsNotEmpty()
+  state: boolean;
 }
