@@ -11,6 +11,7 @@ import { SolarpanelModule } from './solarpanel/solarpanel.module';
 import { AuthModule } from './auth/auth.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { InfluxService } from './influx/influx/influx.service';
+import { InfluxModule } from './influx/influx/influx.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { InfluxService } from './influx/influx/influx.service';
     WindmillsModule,
     SolarpanelModule,
     AuthModule,
-    MqttModule
+    InfluxModule
+    // MqttModule
   ],
   controllers: [AppController],
   providers: [AppService, InfluxService],

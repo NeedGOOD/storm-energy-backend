@@ -20,13 +20,15 @@ export class InfluxService {
   }
 
   async writeMeasurement(topic: string, value: number) {
+    console.log('here');
+    
     const point = new Point(topic)
       .floatField('value', value)
       .timestamp(new Date());
 
     console.log(`Saving to InfluxDB: ${topic} => ${value}`);
     this.writeApi.writePoint(point);
-    this.writeApi.flush();
+    return await this.writeApi.flush();
   }
 
   async closeConnection() {
