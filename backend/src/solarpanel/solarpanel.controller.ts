@@ -3,10 +3,30 @@ import { SolarpanelService } from './solarpanel.service';
 import { CreateSolarpanelDto } from './dto/create-solarpanel.dto';
 import { UpdateSolarpanelDto } from './dto/update-solarpanel.dto';
 import { FilterSolarpanelDto } from './dto/filter-solarpanel.dto';
+import { InfluxDBService } from 'src/influxdb/influxdb.service';
 
 @Controller('solarpanel')
 export class SolarpanelController {
-  constructor(private readonly solarpanelService: SolarpanelService) { }
+  constructor(
+    private readonly solarpanelService: SolarpanelService,
+    private readonly influxDBService: InfluxDBService
+  ) { }
+
+
+  @Post(':userId/:systemId')
+  async writeValues(
+    @Param('userId') userId: number,
+    @Param('systemId') systemId: number,
+    @Body() data: { voltage: number, current: number }
+  ) {
+    console.log('controller');
+    console.log(userId);
+    console.log(systemId);
+    console.log(data.voltage);
+    console.log(data.current);
+
+    return await this.influxDBService.saveSolarpanelData(userId, systemId, data.voltage, data.current);
+  }
 
   @Post()
   create(@Body() createSolarpanelDto: CreateSolarpanelDto) {

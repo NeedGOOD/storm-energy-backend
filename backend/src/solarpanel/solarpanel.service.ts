@@ -1,16 +1,19 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateSolarpanelDto } from './dto/create-solarpanel.dto';
 import { UpdateSolarpanelDto } from './dto/update-solarpanel.dto';
 import { Repository } from 'typeorm';
 import { Solarpanel } from './entities/solarpanel.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterSolarpanelDto } from './dto/filter-solarpanel.dto';
+import { Point, WriteApi } from '@influxdata/influxdb-client';
 
 @Injectable()
 export class SolarpanelService {
   constructor(
     @InjectRepository(Solarpanel)
-    private readonly solarPanelRepository: Repository<Solarpanel>
+    private readonly solarPanelRepository: Repository<Solarpanel>,
+    // @Inject('INFLUX_WRITE_API')
+    // private readonly writeApi: WriteApi,
   ) { }
 
   async create(createSolarpanelDto: CreateSolarpanelDto) {
