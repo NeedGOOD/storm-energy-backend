@@ -4,6 +4,7 @@ import { CreateSolarpanelDto } from './dto/create-solarpanel.dto';
 import { UpdateSolarpanelDto } from './dto/update-solarpanel.dto';
 import { FilterSolarpanelDto } from './dto/filter-solarpanel.dto';
 import { InfluxDBService } from 'src/influxdb/influxdb.service';
+import { BodyFluxQuery } from 'src/interfaces/influx.interface';
 
 @Controller('solarpanel')
 export class SolarpanelController {
@@ -20,6 +21,15 @@ export class SolarpanelController {
     @Body() data: { voltage: number, current: number }
   ) {
     return this.influxDBService.writeSolarpanelData(userId, systemId, data.voltage, data.current);
+  }
+
+  @Get(':userId/:systemId')
+  queryValues(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('systemId', ParseIntPipe) systemId: number,
+    @Body() bodyFluxQuery: BodyFluxQuery
+  ) {
+    return this.influxDBService.querySolarpanelData(userId, systemId, bodyFluxQuery);
   }
 
   @Post()
