@@ -12,20 +12,14 @@ export class SolarpanelController {
     private readonly influxDBService: InfluxDBService
   ) { }
 
-
+  // Поки що такий варіант
   @Post(':userId/:systemId')
-  async writeValues(
-    @Param('userId') userId: number,
-    @Param('systemId') systemId: number,
+  writeValues(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('systemId', ParseIntPipe) systemId: number,
     @Body() data: { voltage: number, current: number }
   ) {
-    console.log('controller');
-    console.log(userId);
-    console.log(systemId);
-    console.log(data.voltage);
-    console.log(data.current);
-
-    return await this.influxDBService.saveSolarpanelData(userId, systemId, data.voltage, data.current);
+    return this.influxDBService.writeSolarpanelData(userId, systemId, data.voltage, data.current);
   }
 
   @Post()

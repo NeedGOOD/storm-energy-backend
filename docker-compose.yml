@@ -56,8 +56,8 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_ADMIN_TOKEN}
       DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_ORG}
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUX_BUCKET}
-    # networks:
-    #   - stormenergy-be
+    networks:
+      - stormenergy-be
 
 volumes:
   be-nm:
