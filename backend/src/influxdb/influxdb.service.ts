@@ -1,6 +1,6 @@
 import { InfluxDB, Point, QueryApi, WriteApi } from "@influxdata/influxdb-client";
 import { Injectable, NotAcceptableException } from "@nestjs/common";
-import { BodyFluxQuery } from "src/interfaces/influx.interface";
+import { BodyFluxQueryRealTime } from "src/interfaces/influx.interface";
 
 @Injectable()
 export class InfluxDBService {
@@ -36,16 +36,14 @@ export class InfluxDBService {
     await this.writeApi.flush();
   }
 
-  // If you write -1h and nothing appears, you need to write a larger number
-  async querySolarpanelData(userId: number, systemId: number, bodyFluxQuery: BodyFluxQuery) {
+  async querySolarpanelRealDataTime(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime) {
     try {
-      console.log('start =', typeof bodyFluxQuery.startTime, bodyFluxQuery.startTime);
-      console.log('type =', typeof bodyFluxQuery.typeProject, bodyFluxQuery.typeProject);
-
       const fluxQuery =
         `from(bucket: "${process.env.INFLUX_BUCKET}")
-          |> range(start: ${bodyFluxQuery.startTime})
-          |> filter(fn: (r) => r._measurement == "${bodyFluxQuery.typeProject}")`;
+          |> range(start: 0)
+          |> filter(fn: (r) => r._measurement == "${bodyFluxQuery.typeProject}" and r.userId == "${userId}" and r.systemId == "${systemId}")
+          |> sort(columns: ["_time"], desc: true)
+          |> limit(n: 1)`;
 
       console.log(fluxQuery);
 
@@ -58,7 +56,7 @@ export class InfluxDBService {
         }
       };
 
-      await myQuery();
+      myQuery();
     } catch (error) {
       throw new NotAcceptableException('error.');
     }
