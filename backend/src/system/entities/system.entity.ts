@@ -6,19 +6,22 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn
 @Entity({ name: 'system' })
 export class System {
   @PrimaryGeneratedColumn('increment')
-  id: number
+  id: number;
+
+  @Column({ type: 'varchar', length: 255, name: 'name', nullable: false })
+  name: string;
 
   @Column({ type: 'varchar', length: 255, name: 'location', nullable: false })
-  location: string
+  location: string;
 
   @ManyToOne(() => Users, (user) => user.systems, { onDelete: 'CASCADE' })
-  user: Users
+  user: Users;
 
   @OneToOne(() => Solarpanel, (solarPanel) => solarPanel.system, { onDelete: 'CASCADE' })
   @JoinColumn()
-  solarPanel: Solarpanel
+  solarPanel: Solarpanel;
 
   @OneToOne(() => Accumulator, (accumulator) => accumulator.system, { onDelete: 'CASCADE' })
   @JoinColumn()
-  accumulator: Accumulator
+  accumulator: Accumulator;
 }

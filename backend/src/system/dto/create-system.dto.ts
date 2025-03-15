@@ -3,6 +3,10 @@ import { IsInt, IsNotEmpty, IsString } from "class-validator";
 export class CreateSystemDto {
   @IsString()
   @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
   location: string;
 
   @IsInt()
