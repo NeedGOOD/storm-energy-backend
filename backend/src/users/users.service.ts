@@ -46,9 +46,10 @@ export class UsersService {
   }
 
   async findOne(id: number) {
+    console.log('findOne userId:', id)
     try {
       const user = await this.usersRepository.findOneOrFail({
-        where: { id },
+        where: id !== undefined ? { id } : { id: -1 }, // якщо id буде undefined TypeORM його проігнорує і поверне перше значення в таблиця
         relations: { systems: true }
       });
 
