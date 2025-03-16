@@ -46,6 +46,21 @@ export class UsersService {
   }
 
   async findOne(id: number) {
+    console.log('findOne userId:', id)
+    try {
+      const user = await this.usersRepository.findOneOrFail({
+        where: id !== undefined ? { id } : { id: -1 }, // якщо id буде undefined TypeORM його проігнорує і поверне перше значення в таблиця
+        relations: { systems: true }
+      });
+
+      const { password, ...userWithoutPasword } = user;
+      return userWithoutPasword;
+    } catch (error) {
+      throw new NotFoundException('User not found by id.');
+    }
+  }
+
+  async findOneWithPassword(id: number) {
     try {
       return await this.usersRepository.findOneOrFail({
         where: { id },
@@ -88,7 +103,7 @@ export class UsersService {
   }
 
   async updatePassword(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
-    const user = await this.findOne(id);
+    const user = await this.findOneWithPassword(id);
 
     const password: UpdateUserPasswordDto = updateUserPasswordDto;
 
