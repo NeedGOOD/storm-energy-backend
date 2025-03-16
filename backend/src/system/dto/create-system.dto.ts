@@ -1,13 +1,13 @@
 import { IsInt, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateSystemDto {
-  @IsString()
-  @IsNotEmpty()
-  location: string;
-
   @IsInt()
   @IsNotEmpty()
-  userId: number;
+  id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
   @IsInt()
   @IsNotEmpty()
@@ -16,4 +16,8 @@ export class CreateSystemDto {
   @IsInt()
   @IsNotEmpty()
   accumulatorId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
 }

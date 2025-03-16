@@ -1,18 +1,18 @@
-import { System } from "src/system/entities/system.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+// import { System } from "src/system/entities/system.entity";
+// import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'accumulator' })
-export class Accumulator {
-    constructor(item: Partial<Accumulator>) {
-        Object.assign(this, item)
-    }
+// @Entity({ name: 'accumulator' })
+// export class Accumulator {
+//     constructor(item: Partial<Accumulator>) {
+//         Object.assign(this, item)
+//     }
 
-    @PrimaryGeneratedColumn('increment')
-    id: number
+//     @PrimaryGeneratedColumn('increment')
+//     id: number
 
-    @Column({ type: 'boolean', name: 'state', nullable: false })
-    state: boolean
+//     @Column({ type: 'boolean', name: 'state', nullable: false })
+//     state: boolean
 
-    @OneToOne(() => System, (system) => system.accumulator)
-    system: System
-}
+//     @OneToOne(() => System, (system) => system.accumulator)
+//     system: System
+// }

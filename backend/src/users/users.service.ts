@@ -74,12 +74,8 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
 
-    if (updateUserDto.email) {
-      const existingUser = await this.usersRepository.findOneBy({ email: updateUserDto.email });
-
-      if (existingUser && existingUser.id === id) {
-        throw new ConflictException('Your email has the same name.');
-      }
+    if (updateUserDto.email && await this.usersRepository.findOneBy({ email: updateUserDto.email })) {
+      throw new ConflictException('This email is already taken.');
     }
 
     try {

@@ -6,9 +6,10 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import { AccumulatorModule } from './accumulator/accumulator.module';
-import { WindmillsModule } from './windmills/windmills.module';
+// import { WindmillsModule } from './windmills/windmills.module';
 import { SolarpanelModule } from './solarpanel/solarpanel.module';
 import { AuthModule } from './auth/auth.module';
+import { InfluxDBModule } from './influxdb/influxdb.module';
 
 @Module({
   imports: [
@@ -17,9 +18,10 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     SystemModule,
     AccumulatorModule,
-    WindmillsModule,
+    // WindmillsModule,
     SolarpanelModule,
-    AuthModule
+    AuthModule,
+    InfluxDBModule
   ],
   controllers: [AppController],
   providers: [AppService],
