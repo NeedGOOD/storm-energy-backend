@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
-import { SolarpanelService } from './solarpanel.service';
+// import { SolarpanelService } from './solarpanel.service';
 import { CreateSolarpanelDto } from './dto/create-solarpanel.dto';
 import { UpdateSolarpanelDto } from './dto/update-solarpanel.dto';
 import { FilterSolarpanelDto } from './dto/filter-solarpanel.dto';
@@ -9,7 +9,7 @@ import { BodyFluxQueryRealTime } from 'src/interfaces/influx.interface';
 @Controller('solarpanel')
 export class SolarpanelController {
   constructor(
-    private readonly solarpanelService: SolarpanelService,
+    // private readonly solarpanelService: SolarpanelService,
     private readonly influxDBService: InfluxDBService
   ) { }
 
@@ -32,33 +32,33 @@ export class SolarpanelController {
     return this.influxDBService.querySolarpanelRealDataTime(userId, systemId, bodyFluxQueryRealTime);
   }
 
-  @Post()
-  create(@Body() createSolarpanelDto: CreateSolarpanelDto) {
-    return this.solarpanelService.create(createSolarpanelDto);
-  }
+  // @Post()
+  // create(@Body() createSolarpanelDto: CreateSolarpanelDto) {
+  //   return this.solarpanelService.create(createSolarpanelDto);
+  // }
 
-  @Get()
-  findAll() {
-    return this.solarpanelService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.solarpanelService.findAll();
+  // }
 
-  @Get('filter')
-  findSolarpanelByFilter(@Query() filters: FilterSolarpanelDto) {
-    return this.solarpanelService.findSolarPanelByFilter(filters);
-  }
+  // @Get('filter')
+  // findSolarpanelByFilter(@Query() filters: FilterSolarpanelDto) {
+  //   return this.solarpanelService.findSolarPanelByFilter(filters);
+  // }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.solarpanelService.findOne(id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id', ParseIntPipe) id: number) {
+  //   return this.solarpanelService.findOne(id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateSolarpanelDto: UpdateSolarpanelDto) {
-    return this.solarpanelService.update(id, updateSolarpanelDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id', ParseIntPipe) id: number, @Body() updateSolarpanelDto: UpdateSolarpanelDto) {
+  //   return this.solarpanelService.update(id, updateSolarpanelDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.solarpanelService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id', ParseIntPipe) id: number) {
+  //   return this.solarpanelService.remove(id);
+  // }
 }

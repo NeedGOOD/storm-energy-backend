@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { System } from './entities/system.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
-import { SolarpanelService } from 'src/solarpanel/solarpanel.service';
-import { AccumulatorService } from 'src/accumulator/accumulator.service';
+// import { SolarpanelService } from 'src/solarpanel/solarpanel.service';
+// import { AccumulatorService } from 'src/accumulator/accumulator.service';
 
 @Injectable()
 export class SystemService {
@@ -14,23 +14,21 @@ export class SystemService {
     @InjectRepository(System)
     private readonly systemRepository: Repository<System>,
     private readonly userService: UsersService,
-    private readonly solarPanelService: SolarpanelService,
-    private readonly accumulatorService: AccumulatorService
+    // private readonly solarPanelService: SolarpanelService,
+    // private readonly accumulatorService: AccumulatorService
   ) { }
 
   async createSystem(createSystemDto: CreateSystemDto) {
     const user = await this.userService.findOne(createSystemDto.userId);
 
-    const solarPanel = await this.solarPanelService.findOne(createSystemDto.solarPanelId);
+    // const solarPanel = await this.solarPanelService.findOne(createSystemDto.solarPanelId);
 
-    const accumulator = await this.accumulatorService.findOne(createSystemDto.accumulatorId);
+    // const accumulator = await this.accumulatorService.findOne(createSystemDto.accumulatorId);
 
     try {
       const system = this.systemRepository.create({
         ...createSystemDto,
         user,
-        solarPanel,
-        accumulator
       });
 
       return await this.systemRepository.save(system);
@@ -41,11 +39,7 @@ export class SystemService {
 
   async findAll() {
     return await this.systemRepository.find({
-      relations: {
-        user: true,
-        solarPanel: true,
-        accumulator: true
-      }
+      relations: { user: true }
     });
   }
 
@@ -53,11 +47,7 @@ export class SystemService {
     try {
       return await this.systemRepository.findOneOrFail({
         where: { id },
-        relations: {
-          user: true,
-          solarPanel: true,
-          accumulator: true
-        }
+        relations: { user: true }
       });
     } catch (error) {
       throw new NotFoundException('System not found by id.');

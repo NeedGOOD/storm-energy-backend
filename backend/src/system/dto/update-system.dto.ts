@@ -6,8 +6,4 @@ export class UpdateSystemDto extends PartialType(CreateSystemDto) {
   @IsString()
   @IsOptional()
   name?: string;
-
-  @IsString()
-  @IsOptional()
-  location?: string;
 }
