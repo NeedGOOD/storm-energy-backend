@@ -2,7 +2,7 @@ import { OnModuleInit } from '@nestjs/common';
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { InfluxDBService } from 'src/influxdb/influxdb.service';
 import { Server } from 'socket.io';
-import { BodyHandleData } from 'src/interfaces/influx.interface';
+import { BodyFluxQueryRealTime, BodyHandleData } from 'src/interfaces/influx.interface';
 
 @WebSocketGateway()
 export class GatewayGateway implements OnModuleInit {
@@ -23,5 +23,17 @@ export class GatewayGateway implements OnModuleInit {
     console.log(bodyHandleData);
 
     this.influxDBService.writeData(bodyHandleData);
+  }
+
+  @SubscribeMessage('queryRealDataTime')
+  async queryRealDataTime(@MessageBody() body: {
+    userId: number,
+    systemId: number,
+    typeProject: BodyFluxQueryRealTime
+  }) {
+    const data = await this.influxDBService.querySolarpanelRealDataTime(body.userId, body.systemId, body.typeProject);
+    console.log("data", data);
+
+    return data;
   }
 }

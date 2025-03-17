@@ -74,14 +74,14 @@ export class InfluxDBService {
 
       const myQuery = async () => {
         for await (const { values, tableMeta } of this.queryApi.iterateRows(fluxQuery)) {
-          const o = tableMeta.toObject(values)
-          console.log(
-            `${o._time} ${o._measurement}: ${o._field}=${o._value}`
-          );
+          const o = tableMeta.toObject(values);
+          // console.log('influx', `${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+
+          return `${o._time} ${o._measurement}: ${o._field}=${o._value}`;
         }
       };
 
-      myQuery();
+      return myQuery();
     } catch (error) {
       throw new NotAcceptableException('error.');
     }
