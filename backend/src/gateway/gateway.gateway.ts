@@ -31,8 +31,22 @@ export class GatewayGateway implements OnModuleInit {
     systemId: number,
     typeProject: BodyFluxQueryRealTime
   }) {
-    const data = await this.influxDBService.querySolarpanelRealDataTime(body.userId, body.systemId, body.typeProject);
+    const data = await this.influxDBService.queryRealDataTime(body.userId, body.systemId, body.typeProject);
     console.log("data", data);
+
+    return data;
+  }
+
+  @SubscribeMessage('queryDataByDate')
+  async queryDataByDate(@MessageBody() body: {
+    userId: number,
+    systemId: number,
+    typeProject: BodyFluxQueryRealTime,
+    startTime: string,
+    stopTime: string
+  }) {
+    const data = await this.influxDBService.queryDataByDate(body.userId, body.systemId, body.typeProject, body.startTime, body.stopTime);
+    console.log('Data by date', data);
 
     return data;
   }

@@ -63,7 +63,7 @@ export class InfluxDBService {
     }
   }
 
-  async querySolarpanelRealDataTime(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime) {
+  async queryRealDataTime(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime) {
     try {
       const fluxQuery =
         `from(bucket: "${process.env.INFLUX_BUCKET}")
@@ -85,6 +85,28 @@ export class InfluxDBService {
     } catch (error) {
       throw new NotAcceptableException('error.');
     }
+  }
+
+  async queryDataByDate(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime, startTime: string, stopTime: string) {
+    const fluxQuery =
+      `from(bucket: "${process.env.INFLUX_BUCKET}")
+        |> range(start: ${startTime}T00:00:00Z, stop: ${stopTime}T00:00:00Z)
+        |> filter(fn: (r) => r._measurement == "${bodyFluxQuery.typeProject}" and r.userId == "${userId}" and r.systemId == "${systemId}")`;
+
+    console.log(fluxQuery);
+
+    const myQuery = async () => {
+      const date: string[] = [];
+      for await (const { values, tableMeta } of this.queryApi.iterateRows(fluxQuery)) {
+        const o = tableMeta.toObject(values);
+        // console.log('influx', `${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+
+        date.push(`${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+      }
+      return date;
+    };
+
+    return myQuery();
   }
 
   private powerToPercentage(currentPower: number): number {
