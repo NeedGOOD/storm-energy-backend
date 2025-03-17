@@ -1,6 +1,6 @@
 import { InfluxDB, Point, QueryApi, WriteApi } from "@influxdata/influxdb-client";
 import { Injectable, InternalServerErrorException, NotAcceptableException } from "@nestjs/common";
-import { BodyFluxQueryRealTime } from "src/interfaces/influx.interface";
+import { BodyFluxQueryRealTime, BodyHandleData } from "src/interfaces/influx.interface";
 
 @Injectable()
 export class InfluxDBService {
@@ -24,21 +24,21 @@ export class InfluxDBService {
     );
   }
 
-  async writeData(userId: number, systemId: number, currentPower: number) {
+  async writeData(handleData: BodyHandleData) {
     await Promise.all([
-      this.writeSolarpanelData(userId, systemId, currentPower),
-      this.writeAccumulatorData(userId, systemId, this.powerToPercentage(currentPower))
+      this.writeSolarpanelData(handleData),
+      this.writeAccumulatorData(handleData.userId, handleData.systemId, this.powerToPercentage(handleData.currentPower))
     ]);
 
     return { message: 'Data written successfully' };
   }
 
-  async writeSolarpanelData(userId: number, systemId: number, currentPower: number): Promise<void> {
+  private async writeSolarpanelData(handleData: BodyHandleData): Promise<void> {
     try {
       const point = new Point('solar_panel')
-        .tag('userId', String(userId))
-        .tag('systemId', String(systemId))
-        .floatField('current_power', currentPower);
+        .tag('userId', String(handleData.userId))
+        .tag('systemId', String(handleData.systemId))
+        .floatField('current_power', handleData.currentPower);
 
       this.writeApi.writePoint(point);
 
@@ -48,7 +48,7 @@ export class InfluxDBService {
     }
   }
 
-  async writeAccumulatorData(userId: number, systemId: number, batteryCharge: number): Promise<void> {
+  private async writeAccumulatorData(userId: number, systemId: number, batteryCharge: number): Promise<void> {
     try {
       const point = new Point('accumulator')
         .tag('userId', String(userId))
@@ -87,7 +87,7 @@ export class InfluxDBService {
     }
   }
 
-  powerToPercentage(currentPower: number): number {
+  private powerToPercentage(currentPower: number): number {
     if (currentPower === 0) return 0;
 
     const maxPower = 300;
