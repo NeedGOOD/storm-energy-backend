@@ -8,6 +8,7 @@ import { SystemModule } from './system/system.module';
 import { AuthModule } from './auth/auth.module';
 import { InfluxDBModule } from './influxdb/influxdb.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { GatewayModule } from './gateway/gateway.module';
     SystemModule,
     AuthModule,
     InfluxDBModule,
-    GatewayModule
+    GatewayModule,
+    MqttModule
   ],
   controllers: [AppController],
   providers: [AppService],
