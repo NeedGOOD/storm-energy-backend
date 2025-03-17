@@ -18,9 +18,9 @@ export class SolarpanelController {
   writeValues(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('systemId', ParseIntPipe) systemId: number,
-    @Body() data: { voltage: number, current: number }
+    @Body() currentPower: { currentPower: number }
   ) {
-    return this.influxDBService.writeSolarpanelData(userId, systemId, data.voltage, data.current);
+    return this.influxDBService.writeData(userId, systemId, currentPower.currentPower);
   }
 
   @Get(':userId/:systemId')

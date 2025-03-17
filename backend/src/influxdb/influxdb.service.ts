@@ -1,5 +1,5 @@
 import { InfluxDB, Point, QueryApi, WriteApi } from "@influxdata/influxdb-client";
-import { Injectable, NotAcceptableException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotAcceptableException } from "@nestjs/common";
 import { BodyFluxQueryRealTime } from "src/interfaces/influx.interface";
 
 @Injectable()
@@ -24,16 +24,43 @@ export class InfluxDBService {
     );
   }
 
-  async writeSolarpanelData(userId: number, systemId: number, voltage: number, current: number) {
-    const point = new Point('solar_panel')
-      .tag('userId', String(userId))
-      .tag('systemId', String(systemId))
-      .floatField('voltage', voltage)
-      .floatField('current', current);
+  async writeData(userId: number, systemId: number, currentPower: number) {
+    await Promise.all([
+      this.writeSolarpanelData(userId, systemId, currentPower),
+      this.writeAccumulatorData(userId, systemId, this.powerToPercentage(currentPower))
+    ]);
 
-    this.writeApi.writePoint(point);
+    return { message: 'Data written successfully' };
+  }
 
-    await this.writeApi.flush();
+  async writeSolarpanelData(userId: number, systemId: number, currentPower: number): Promise<void> {
+    try {
+      const point = new Point('solar_panel')
+        .tag('userId', String(userId))
+        .tag('systemId', String(systemId))
+        .floatField('current_power', currentPower);
+
+      this.writeApi.writePoint(point);
+
+      await this.writeApi.flush();
+    } catch (error) {
+      throw new InternalServerErrorException('Error solar panel.');
+    }
+  }
+
+  async writeAccumulatorData(userId: number, systemId: number, batteryCharge: number): Promise<void> {
+    try {
+      const point = new Point('accumulator')
+        .tag('userId', String(userId))
+        .tag('systemId', String(systemId))
+        .floatField('battery_charge', batteryCharge)
+
+      this.writeApi.writePoint(point);
+
+      await this.writeApi.flush();
+    } catch (error) {
+      throw new InternalServerErrorException('Error accumulator.')
+    }
   }
 
   async querySolarpanelRealDataTime(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime) {
@@ -44,8 +71,6 @@ export class InfluxDBService {
           |> filter(fn: (r) => r._measurement == "${bodyFluxQuery.typeProject}" and r.userId == "${userId}" and r.systemId == "${systemId}")
           |> sort(columns: ["_time"], desc: true)
           |> limit(n: 1)`;
-
-      console.log(fluxQuery);
 
       const myQuery = async () => {
         for await (const { values, tableMeta } of this.queryApi.iterateRows(fluxQuery)) {
@@ -60,5 +85,13 @@ export class InfluxDBService {
     } catch (error) {
       throw new NotAcceptableException('error.');
     }
+  }
+
+  powerToPercentage(currentPower: number): number {
+    if (currentPower === 0) return 0;
+
+    const maxPower = 300;
+
+    return (currentPower / maxPower) * 100;
   }
 }
