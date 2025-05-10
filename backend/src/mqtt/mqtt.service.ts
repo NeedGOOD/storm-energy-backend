@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as mqtt from 'mqtt';
+import { InfluxDBService } from 'src/influxdb/influxdb.service';
 
 @Injectable()
 export class MqttService implements OnModuleInit {
@@ -7,6 +8,8 @@ export class MqttService implements OnModuleInit {
   private readonly brokerUrl = 'mqtt://broker.emqx.io:1883';
   private readonly topic = 'randomnumbers9734628/storm_energy_project/sensorACHS';
   private readonly logger = new Logger(MqttService.name);
+
+  constructor(private readonly influxDBService: InfluxDBService) { }
 
   onModuleInit() {
     this.connect();
@@ -25,6 +28,8 @@ export class MqttService implements OnModuleInit {
     });
 
     this.client.on('message', (topic, message) => {
+
+
       this.logger.log(`Отримано повідомлення з топіку ${topic}: ${message.toString()}`);
     });
   }
