@@ -5,11 +5,10 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
-import { AccumulatorModule } from './accumulator/accumulator.module';
-// import { WindmillsModule } from './windmills/windmills.module';
-import { SolarpanelModule } from './solarpanel/solarpanel.module';
 import { AuthModule } from './auth/auth.module';
 import { InfluxDBModule } from './influxdb/influxdb.module';
+import { GatewayModule } from './gateway/gateway.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -17,11 +16,10 @@ import { InfluxDBModule } from './influxdb/influxdb.module';
     UsersModule,
     DatabaseModule,
     SystemModule,
-    AccumulatorModule,
-    // WindmillsModule,
-    SolarpanelModule,
     AuthModule,
-    InfluxDBModule
+    InfluxDBModule,
+    GatewayModule,
+    MqttModule
   ],
   controllers: [AppController],
   providers: [AppService],

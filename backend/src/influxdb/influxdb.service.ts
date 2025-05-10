@@ -1,6 +1,6 @@
 import { InfluxDB, Point, QueryApi, WriteApi } from "@influxdata/influxdb-client";
-import { Injectable, NotAcceptableException } from "@nestjs/common";
-import { BodyFluxQueryRealTime } from "src/interfaces/influx.interface";
+import { Injectable, InternalServerErrorException, NotAcceptableException } from "@nestjs/common";
+import { BodyFluxQueryRealTime, BodyHandleData } from "src/interfaces/influx.interface";
 
 @Injectable()
 export class InfluxDBService {
@@ -24,19 +24,46 @@ export class InfluxDBService {
     );
   }
 
-  async writeSolarpanelData(userId: number, systemId: number, voltage: number, current: number) {
-    const point = new Point('solar_panel')
-      .tag('userId', String(userId))
-      .tag('systemId', String(systemId))
-      .floatField('voltage', voltage)
-      .floatField('current', current);
+  async writeData(handleData: BodyHandleData) {
+    await Promise.all([
+      this.writeSolarpanelData(handleData),
+      this.writeAccumulatorData(handleData.userId, handleData.systemId, this.powerToPercentage(handleData.currentPower))
+    ]);
 
-    this.writeApi.writePoint(point);
-
-    await this.writeApi.flush();
+    return { message: 'Data written successfully' };
   }
 
-  async querySolarpanelRealDataTime(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime) {
+  private async writeSolarpanelData(handleData: BodyHandleData): Promise<void> {
+    try {
+      const point = new Point('solar_panel')
+        .tag('userId', String(handleData.userId))
+        .tag('systemId', String(handleData.systemId))
+        .floatField('current_power', handleData.currentPower);
+
+      this.writeApi.writePoint(point);
+
+      await this.writeApi.flush();
+    } catch (error) {
+      throw new InternalServerErrorException('Error solar panel.');
+    }
+  }
+
+  private async writeAccumulatorData(userId: number, systemId: number, batteryCharge: number): Promise<void> {
+    try {
+      const point = new Point('accumulator')
+        .tag('userId', String(userId))
+        .tag('systemId', String(systemId))
+        .floatField('battery_charge', batteryCharge)
+
+      this.writeApi.writePoint(point);
+
+      await this.writeApi.flush();
+    } catch (error) {
+      throw new InternalServerErrorException('Error accumulator.')
+    }
+  }
+
+  async queryRealDataTime(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime) {
     try {
       const fluxQuery =
         `from(bucket: "${process.env.INFLUX_BUCKET}")
@@ -45,20 +72,48 @@ export class InfluxDBService {
           |> sort(columns: ["_time"], desc: true)
           |> limit(n: 1)`;
 
-      console.log(fluxQuery);
-
       const myQuery = async () => {
         for await (const { values, tableMeta } of this.queryApi.iterateRows(fluxQuery)) {
-          const o = tableMeta.toObject(values)
-          console.log(
-            `${o._time} ${o._measurement}: ${o._field}=${o._value}`
-          );
+          const o = tableMeta.toObject(values);
+          // console.log('influx', `${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+
+          return `${o._time} ${o._measurement}: ${o._field}=${o._value}`;
         }
       };
 
-      myQuery();
+      return myQuery();
     } catch (error) {
       throw new NotAcceptableException('error.');
     }
+  }
+
+  async queryDataByDate(userId: number, systemId: number, bodyFluxQuery: BodyFluxQueryRealTime, startTime: string, stopTime: string) {
+    const fluxQuery =
+      `from(bucket: "${process.env.INFLUX_BUCKET}")
+        |> range(start: ${startTime}T00:00:00Z, stop: ${stopTime}T00:00:00Z)
+        |> filter(fn: (r) => r._measurement == "${bodyFluxQuery.typeProject}" and r.userId == "${userId}" and r.systemId == "${systemId}")`;
+
+    console.log(fluxQuery);
+
+    const myQuery = async () => {
+      const date: string[] = [];
+      for await (const { values, tableMeta } of this.queryApi.iterateRows(fluxQuery)) {
+        const o = tableMeta.toObject(values);
+        // console.log('influx', `${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+
+        date.push(`${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+      }
+      return date;
+    };
+
+    return myQuery();
+  }
+
+  private powerToPercentage(currentPower: number): number {
+    if (currentPower === 0) return 0;
+
+    const maxPower = 300;
+
+    return (currentPower / maxPower) * 100;
   }
 }
